@@ -25,7 +25,7 @@ intents = discord.Intents.default()
 intents.presences =True
 intents.members = True
 intents.messages = True
-client = discord.Client(intents=intents)
+client = discord.Client(intents=intents, status=discord.Status.online, activity=discord.CustomActivity(name='進化しました.'))
 
 # グローバル変数としてメンバーを保持
 pool_member = None
