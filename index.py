@@ -74,6 +74,32 @@ class ButtonView(View):
         await pool_member.remove_roles(pool_member.guild.get_role(int(config["User"][Role_list[3]])))
         self.stop()
 
+    @discord.ui.button(label="キックする", style=discord.ButtonStyle.danger)
+    async def kick_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_message('キックしますか', ephemeral=True, view=KickView())
+
+# キックボタンの設定
+class KickView(View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(label="キックする", style=discord.ButtonStyle.danger)
+    async def kick_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_message(f'{interaction.user.display_name}がキックしました.')
+        await pool_member.kick()
+        self.stop()
+    
+    @discord.ui.button(label="キャンセル", style=discord.ButtonStyle.secondary)
+    async def cancel_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_message('キャンセルしました.', ephemeral=True)
+
+# サーバー退出時の処理
+@client.event
+async def on_member_remove(member):
+    print(f'{member.name} が退出しました.')
+    channel = member.guild.get_channel(1390898223547289682)
+    await channel.send(f'{member.display_name} が退出しました.')
+
 # 起動
 try:
     client.run(TOKEN)
