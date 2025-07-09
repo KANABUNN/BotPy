@@ -27,6 +27,9 @@ intents.members = True
 intents.messages = True
 client = discord.Client(intents=intents)
 
+# グローバル変数としてメンバーを保持
+pool_member = None
+
 # 起動時の処理
 @client.event
 async def on_ready():
@@ -35,6 +38,8 @@ async def on_ready():
 # サーバー参加時の処理
 @client.event
 async def on_member_join(member):
+    global pool_member
+    pool_member = member
     print(f'{member.name} が参加しました.')
     channel = member.guild.get_channel(int(config["User"][Channel_list[0]]))
     await channel.send(f'@everyone\n{member.display_name} さんが参加しました.', view=ButtonView())
@@ -49,11 +54,24 @@ class ButtonView(View):
     @discord.ui.button(label="メンバー権限を与える", style=discord.ButtonStyle.secondary)
     async def mem_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_message(f'{interaction.user.display_name}がメンバー権限を与えました.')
+        await pool_member.add_roles(pool_member.guild.get_role(int(config["User"][Role_list[0]])))
+        await pool_member.remove_roles(pool_member.guild.get_role(int(config["User"][Role_list[3]])))
+        channel = pool_member.guild.get_channel(int(config["User"][Channel_list[1]]))
+        await channel.send(f'@everyone\n{pool_member.guild.name}に {pool_member.mention} さんが参加されました！\n皆さん仲良くしてくださいね～')
         self.stop()
 
     @discord.ui.button(label="ゲスト権限を与える", style=discord.ButtonStyle.secondary)
     async def guest_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_message(f'{interaction.user.display_name}がゲスト権限を与えました.')
+        await pool_member.add_roles(pool_member.guild.get_role(int(config["User"][Role_list[1]])))
+        await pool_member.remove_roles(pool_member.guild.get_role(int(config["User"][Role_list[3]])))
+        self.stop()
+
+    @discord.ui.button(label="Bot権限を与える", style=discord.ButtonStyle.secondary)
+    async def bot_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_message(f'{interaction.user.display_name}がBot権限を与えました.')
+        await pool_member.add_roles(pool_member.guild.get_role(int(config["User"][Role_list[2]])))
+        await pool_member.remove_roles(pool_member.guild.get_role(int(config["User"][Role_list[3]])))
         self.stop()
 
 # 起動
