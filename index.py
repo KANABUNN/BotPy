@@ -106,7 +106,7 @@ async def on_member_remove(member):
 
 # コマンドの設定
 @tree.command(name='promote', description='ゲストをメンバーに昇格させます．')
-async def hello(ctx: discord.Interaction,name: discord.Member):
+async def pmt(ctx: discord.Interaction,name: discord.Member):
     global pro_member
     pro_member = name
     await ctx.response.send_message('昇格させますか？', ephemeral=True, view=PromoteView(name))
