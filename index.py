@@ -41,6 +41,7 @@ async def on_ready():
 # サーバー参加時の処理
 @client.event
 async def on_member_join(member):
+    if (member.guild.id != int(config["Admin"]["ServerID"])):return
     global pool_member
     pool_member = member
     print(f'{member.name} が参加しました.')
@@ -121,6 +122,8 @@ class PromoteView(View):
         await interaction.response.send_message(f'{interaction.user.display_name}が{pro_member.display_name} さんを昇格させました．')
         await pro_member.add_roles(pro_member.guild.get_role(int(config["User"][Role_list[0]])))
         await pro_member.remove_roles(pro_member.guild.get_role(int(config["User"][Role_list[1]])))
+        channel = pro_member.guild.get_channel(int(config["User"][Channel_list[1]]))
+        await channel.send(f'@everyone\n{pro_member.guild.name}に {pro_member.mention} さんが参加されました！\n皆さん仲良くしてくださいね～')
         self.stop()
         
     @discord.ui.button(label="キャンセル", style=discord.ButtonStyle.secondary)
