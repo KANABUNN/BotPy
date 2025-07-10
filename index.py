@@ -26,14 +26,17 @@ intents.presences =True
 intents.members = True
 intents.messages = True
 client = discord.Client(intents=intents, status=discord.Status.online, activity=discord.CustomActivity(name='進化しました.'))
+tree = discord.app_commands.CommandTree(client)
 
 # グローバル変数としてメンバーを保持
 pool_member = None
+pro_member = None
 
 # 起動時の処理
 @client.event
 async def on_ready():
     print('起動')
+    await tree.sync()
 
 # サーバー参加時の処理
 @client.event
@@ -99,6 +102,31 @@ async def on_member_remove(member):
     print(f'{member.name} が退出しました.')
     channel = member.guild.get_channel(1390898223547289682)
     await channel.send(f'{member.display_name} が退出しました.')
+
+# コマンドの設定
+@tree.command(name='promote', description='ゲストをメンバーに昇格させます．')
+async def hello(ctx: discord.Interaction,name: discord.Member):
+    global pro_member
+    pro_member = name
+    await ctx.response.send_message('昇格させますか？', ephemeral=True, view=PromoteView(name))
+
+# 昇格ボタンの設定
+class PromoteView(View):
+    def __init__(self, member):
+        super().__init__(timeout=None)
+        self.member = member
+
+    @discord.ui.button(label="昇格させる", style=discord.ButtonStyle.success)
+    async def promote_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_message(f'{interaction.user.display_name}が{pro_member.display_name} さんを昇格させました．')
+        await pro_member.add_roles(pro_member.guild.get_role(int(config["User"][Role_list[0]])))
+        await pro_member.remove_roles(pro_member.guild.get_role(int(config["User"][Role_list[1]])))
+        self.stop()
+        
+    @discord.ui.button(label="キャンセル", style=discord.ButtonStyle.secondary)
+    async def cancel_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_message('キャンセルしました．', ephemeral=True)
+        self.stop()
 
 # 起動
 try:
