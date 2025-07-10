@@ -80,7 +80,7 @@ class ButtonView(View):
 
     @discord.ui.button(label="キックする", style=discord.ButtonStyle.danger)
     async def kick_button(self, interaction: discord.Interaction, button: Button):
-        await interaction.response.send_message('キックしますか', ephemeral=True, view=KickView())
+        await interaction.response.send_message('キックしますか?', ephemeral=True, view=KickView())
 
 # キックボタンの設定
 class KickView(View):
