@@ -101,7 +101,7 @@ class KickView(View):
 @client.event
 async def on_member_remove(member):
     print(f'{member.name} が退出しました.')
-    channel = member.guild.get_channel(1390898223547289682)
+    channel = client.get_channel(1390898223547289682)
     await channel.send(f'{member.display_name} が退出しました.')
 
 # コマンドの設定
